@@ -15,7 +15,7 @@ all:
 	$(CXX) $(OBJS) -o $(EXEC) $(LIBS) $(INC)
 
 run:
-	./rt 1000 1000 > image.ppm
+	./rt 1600 16 9 > image.ppm
 
 clean:
 	rm rt image.ppm
