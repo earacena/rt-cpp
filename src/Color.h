@@ -12,8 +12,12 @@
 
 #include "Vec3.h"
 #include "Ray.h"
+#include "Sphere.h"
 
 ColorRGB compute_ray_color(const Ray & ray) {
+    if (hit_sphere(Point3(0.0, 0.0, -1.0), 0.5, ray))
+        return ColorRGB(1.0, 0.0, 0.0);
+
     Vec3 unit_direction  = unit_vector(ray.direction());
     double t = 0.5 * (unit_direction.y() + 1.0);
     return  (1.0 - t) * ColorRGB(0.1, 1.0, 0.1) + 
