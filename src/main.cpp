@@ -39,26 +39,15 @@ void render(const Camera & camera, const int image_width,
     // every line is a RGB triplet
     // col is image_width pixels
     // row is image_height pixels
-    // Iterate every pixel, slowly fading in green values left to right,
-    // and fading out red values top to bottom
-    //double r = 0.0;
-    //double g = 0.0;
-    //double b = 0.0;
     
-    double u = 0.0;
-    double v = 0.0;
+    double u = 0.0;     // 0.0-1.0 horizontal scale
+    double v = 0.0;     // 0.0-1.0 horizontal scale
+    
     ColorRGB color = ColorRGB(0.0, 0.0, 0.0);
+    
     for (int row = image_height-1; row >= 0; --row) {
         std::cerr << "\rScanlines remaining: " << row << std::flush;
         for(int col = 0; col < image_width; ++col) {
-            // r = static_cast<double>(col) / static_cast<double>(image_width-1);
-            // g = static_cast<double>(row) / static_cast<double>(image_height-1);
-            // b = static_cast<double>(row+col) / 
-            //     static_cast<double>(image_width+image_height-2);
-            // std::get<0>(color.e) = r;
-            // std::get<1>(color.e) = g;
-            // std::get<2>(color.e) = b;
-            
             u = static_cast<double>(col) / static_cast<double>(image_width-1);
             v = static_cast<double>(row) / static_cast<double>(image_height-1);
 
