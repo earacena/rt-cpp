@@ -12,29 +12,15 @@
 #include "Vec3.h"
 #include "Ray.h"
 #include "Camera.h"
+#include "Color.h"
 
 void print_usage() {
     std::cerr << "Usage:" << std::endl 
               << "./rt [image width] [aspect width] [aspect height]" << std::endl 
               << "\tArgs:" << std::endl
-              << "\twidth: numeric value, 1-2000" << std::endl
+              << "\twidth: numeric value, example: 1600" << std::endl
               << "\taspect width: numeric value, example: 16" << std::endl
               << "\taspect height: numeric value, example: 9" << std::endl;
-}
-
-ColorRGB compute_ray_color(const Ray & ray) {
-    Vec3 unit_direction  = unit_vector(ray.direction());
-    double t = 0.5 * (unit_direction.y() + 1.0);
-    return  (1.0 - t) * ColorRGB(1.0, 1.0, 1.0) + 
-            t * ColorRGB(0.5, 0.7, 1.0);
-}
-
-void write_color(std::ostream & output, const ColorRGB color) {
-    // RGB triplets follow arithmentic notation from 0-1,
-    // convert to a color value from 0-255 and output
-    output << static_cast<int>(255.999 * color.x()) << " "
-           << static_cast<int>(255.999 * color.y()) << " "
-           << static_cast<int>(255.999 * color.z()) << std::endl;
 }
 
 void render(const Camera & camera, const int image_width, 
