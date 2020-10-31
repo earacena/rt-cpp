@@ -11,7 +11,7 @@
 #include "Vec3.h"
 #include "Ray.h"
 
-bool hit_sphere(const Point3 & center, double radius, const Ray & ray) {
+double hit_sphere(const Point3 & center, double radius, const Ray & ray) {
     // Sphere equation: (p - c) dot (p - c) = r^2
     // Intersection:
     //      ((o + td) - c) dot ((o + td) - c) = r^2 
@@ -28,7 +28,14 @@ bool hit_sphere(const Point3 & center, double radius, const Ray & ray) {
     // d < 0, no intersection
     // d = 0, 1 intersection, surface
     // d > 0, 2 intersections
-    return (discriminant > 0.0);
+    if (discriminant < 0.0) {
+        // if negetive discriminant, no intersection, 
+        // give negetive t-value
+        return -1.0;
+    } else {
+        // if intersections, give t-value >= 0
+        return (-b - std::sqrt(discriminant)) / (2.0 * a);
+    }
 }
 
 #endif // SPHERE_H
