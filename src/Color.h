@@ -11,24 +11,37 @@
 #include <iostream>
 
 #include "common.h"
+#include "Vec3.h"
+#include "Ray.h"
 #include "Sphere.h"
 #include "HittableList.h"
 
-ColorRGB compute_ray_color(const Ray & ray, const Hittable & world) {
+ColorRGB compute_ray_color(const Ray & ray, const Hittable & world, int depth) {
+
+    // To avoid overflowing stack with recursion calls using the method below,
+    // return no color/light after reaching a certain depth
+    if (depth <= 0)
+        return ColorRGB(0.0, 0.0, 0.0);
 
     HitRecord record;
     // Iterated though all potentially hit objects and check for closest,
     // then use the closest surface normal for color
-    if (world.hit(ray, 0.0, infinity, record)) 
-        return 0.5 * (record.normal + ColorRGB(1.0, 1.0, 1.0));
+    // A random point will send a ray thats within the unit sphere of the surface
+    // out and recursively hit and recompute color until it fails to hit anything
+    if (world.hit(ray, 0.0, infinity, record)) { 
+        Point3 target = record.point + record.normal + random_in_unit_sphere();
+        return 0.5 * compute_ray_color( Ray(record.point, target - record.point), 
+                                        world, 
+                                        depth-1);
+    }
 
     Vec3 unit_direction  = unit_vector(ray.direction());
     // Produces a t value that is scaled to y-coordinate, ranges from -1 to 1
     // if ray is at center (0, 0, 0), direction of ray points -1 < y < 1
     // normalize it by adding 1 and dividing by two
     double t = 0.5 * (unit_direction.y() + 1.0);
-    return  (1.0 - t) * ColorRGB(0.7, 0.1, 0.5) + 
-            t * ColorRGB(0.0, 0.0, 0.0);
+    return  (1.0 - t) * ColorRGB(1.0, 1.0, 1.0) + 
+            t * ColorRGB(0.5, 0.7, 1.0);
 }
 
 void write_color(std::ostream & output, const ColorRGB color, 

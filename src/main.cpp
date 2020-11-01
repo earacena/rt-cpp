@@ -10,6 +10,8 @@
 #include <cstdlib>
 
 #include "common.h"
+#include "Vec3.h"
+#include "Ray.h"
 #include "Camera.h"
 #include "Color.h"
 #include "Sphere.h"
@@ -29,6 +31,9 @@ void print_usage() {
 void render(const HittableList & world, const Camera & camera, 
             const int image_width, const int image_height, 
             const int num_of_samples) {
+    
+    const int max_depth = 50;
+
     // Generate a .ppm (Netpbm) image
     // P3 means RGB color image in ASCII
     std::cout << "P3" << std::endl;
@@ -64,7 +69,7 @@ void render(const HittableList & world, const Camera & camera,
                 v = (static_cast<double>(row) + random_double()) / 
                         static_cast<double>(image_height-1);
  
-                color += compute_ray_color(camera.calculate_ray(u, v), world);
+                color += compute_ray_color(camera.calculate_ray(u, v), world, max_depth);
             }
 
             write_color(std::cout, color, num_of_samples);

@@ -13,10 +13,6 @@
 #include <memory>
 #include <random>
 
-// Common headers
-#include "Vec3.h"
-#include "Ray.h"
-
 // Constants
 const double infinity = std::numeric_limits<double>::infinity();
 const double pi = 3.1415926535897932385;
@@ -28,9 +24,15 @@ inline double degrees_to_radians(double degrees) {
 }
 
 inline double random_double() {
-    static std::uniform_real_distribution<double> distribuition(0.0, 1.0);
+    static std::uniform_real_distribution<double> distribution(0.0, 1.0);
     static std::mt19937 generator;
-    return distribuition(generator);
+    return distribution(generator);
+}
+
+inline double random_double(double min, double max) {
+    static std::uniform_real_distribution<double> distribution(min, max);
+    static std::mt19937 generator;
+    return distribution(generator);
 }
 
 inline double clamp(double x, double min, double max) {

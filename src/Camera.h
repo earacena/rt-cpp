@@ -8,7 +8,8 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "common.h"
+#include "Vec3.h"
+#include "Ray.h"
 
 class Camera {
 public:

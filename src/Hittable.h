@@ -9,6 +9,8 @@
 #define HITTABLE_H
 
 #include "common.h"
+#include "Vec3.h"
+#include "Ray.h"
 
 struct HitRecord {
     Point3 point;

@@ -9,6 +9,8 @@
 #define SPHERE_H
 
 #include "common.h"
+#include "Vec3.h"
+#include "Ray.h"
 #include "Hittable.h"
 
 class Sphere : public Hittable {

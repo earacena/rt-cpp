@@ -10,6 +10,8 @@
 #include <array>
 #include <cmath>
 
+#include "common.h"
+
 class Vec3 {
 public:
     Vec3() : e{0.0, 0.0, 0.0} {}
@@ -78,6 +80,15 @@ public:
         return std::sqrt(length_squared());
     }
 
+    inline static Vec3 random() {
+        return Vec3(random_double(), random_double(), random_double());
+    }
+
+    inline static Vec3 random(double min, double max) {
+        return Vec3(random_double(min, max), random_double(min, max), 
+                    random_double(min, max));
+    }
+    
     // Data members
     std::array<double, 3> e;
 };
@@ -147,6 +158,11 @@ inline Vec3 cross(const Vec3 & u, const Vec3 & v) {
 inline Vec3 unit_vector(const Vec3 & v) {
     return v / v.length();
 }
+
+
+// Functions
+Vec3 random_in_unit_sphere();
+
 
 // Type aliases
 using ColorRGB = Vec3;
