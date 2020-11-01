@@ -10,8 +10,7 @@
 
 #include <iostream>
 
-#include "Vec3.h"
-#include "Ray.h"
+#include "common.h"
 #include "Sphere.h"
 
 ColorRGB compute_ray_color(const Ray & ray) {

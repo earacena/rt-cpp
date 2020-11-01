@@ -9,8 +9,7 @@
 #include <string>
 #include <cstdlib>
 
-#include "Vec3.h"
-#include "Ray.h"
+#include "common.h"
 #include "Camera.h"
 #include "Color.h"
 

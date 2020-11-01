@@ -8,8 +8,7 @@
 #ifndef SPHERE_H
 #define SPHERE_H
 
-#include "Vec3.h"
-#include "Ray.h"
+#include "common.h"
 #include "Hittable.h"
 
 class Sphere : public Hittable {
