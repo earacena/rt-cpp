@@ -8,7 +8,7 @@ CFLAGS = -g -Wall -pedantic --std=c++17
 INC    = -I
 LIBS   = -L
 
-OBJS   = src/main.cpp 
+OBJS   = src/main.cpp src/Sphere.cpp 
 EXEC   = rt
 
 all:
