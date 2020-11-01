@@ -12,6 +12,8 @@
 #include "common.h"
 #include "Camera.h"
 #include "Color.h"
+#include "Sphere.h"
+#include "HittableList.h"
 
 void print_usage() {
     std::cerr << "Usage:" << std::endl 
@@ -22,8 +24,8 @@ void print_usage() {
               << "\taspect height: numeric value, example: 9" << std::endl;
 }
 
-void render(const Camera & camera, const int image_width, 
-            const int image_height) {
+void render(const HittableList & world, const Camera & camera, 
+            const int image_width, const int image_height) {
     // Generate a .ppm (Netpbm) image
     // P3 means RGB color image in ASCII
     std::cout << "P3" << std::endl;
@@ -45,13 +47,13 @@ void render(const Camera & camera, const int image_width,
     ColorRGB color = ColorRGB(0.0, 0.0, 0.0);
     
     for (int row = image_height-1; row >= 0; --row) {
+        // Indicate progress
         std::cerr << "\rScanlines remaining: " << row << std::flush;
         for(int col = 0; col < image_width; ++col) {
             u = static_cast<double>(col) / static_cast<double>(image_width-1);
             v = static_cast<double>(row) / static_cast<double>(image_height-1);
 
-            color = compute_ray_color(camera.calculate_ray(u, v)); 
-            
+            color = compute_ray_color(camera.calculate_ray(u, v), world); 
             write_color(std::cout, color);
         }
     }
@@ -74,11 +76,16 @@ int main(int argc, char *argv[]) {
     const double aspect_ratio = aspect_width / aspect_height;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
 
+    // World
+    HittableList world;
+    world.add(std::make_shared<Sphere>(Point3(0.0, 0.0, -1.0), 0.5));
+    world.add(std::make_shared<Sphere>(Point3(0.0, -100.5, -1.0), 100));
+
     // Camera
     Camera camera(2.0, aspect_ratio, 1.0, Point3(0.0, 0.0, 0.0));
 
     // Render
-    render(camera, image_width, image_height);    
+    render(world, camera, image_width, image_height);    
         
     return 0;
 }

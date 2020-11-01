@@ -83,11 +83,11 @@ public:
 };
 
 // Inline utility functions/operators for vector operations
-inline std::ostream & operator << (std::ostream & out, const Vec3 & v) {
-    return out << std::get<0>(v.e) << " " 
-               << std::get<1>(v.e) << " " 
-               << std::get<2>(v.e);
-}
+//inline std::ostream & operator<<(std::ostream & out, const Vec3 & v) {
+//    return out << std::get<0>(v.e) << " " 
+//               << std::get<1>(v.e) << " " 
+//               << std::get<2>(v.e);
+//}
 
 inline Vec3 operator+(const Vec3 & u, const Vec3 & v) {
     return Vec3( std::get<0>(u.e) + std::get<0>(v.e),

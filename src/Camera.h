@@ -8,7 +8,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "Common.h"
+#include "common.h"
 
 class Camera {
 public:

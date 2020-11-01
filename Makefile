@@ -12,7 +12,7 @@ OBJS   = src/main.cpp src/Sphere.cpp src/HittableList.cpp
 EXEC   = rt
 
 all:
-	$(CXX) $(OBJS) -o $(EXEC) $(LIBS) $(INC)
+	$(CXX) $(OBJS) -o $(EXEC) $(LIBS) $(INC) $(CFLAGS)
 
 run:
 	./rt 1600 16 9 > image.ppm

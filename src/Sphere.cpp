@@ -35,7 +35,7 @@ bool Sphere::hit( const Ray & ray, double t_min, double t_max,
         double root = std::sqrt(discriminant);
 
         double minus_root = (-h - root) / a;
-        if (t_min < minus_root < t_max) {
+        if (t_min < minus_root && minus_root < t_max) {
             record.t = minus_root;
             record.point = ray.at(record.t);
             Vec3 outward_normal = (record.point - center) / radius;
@@ -44,7 +44,7 @@ bool Sphere::hit( const Ray & ray, double t_min, double t_max,
         }
 
         double plus_root = (-h + root) / a;
-        if (t_min < plus_root < t_max) {
+        if (t_min < plus_root && plus_root < t_max) {
             record.t = plus_root;
             record.point = ray.at(record.t);
             Vec3 outward_normal = (record.point - center) / radius;
