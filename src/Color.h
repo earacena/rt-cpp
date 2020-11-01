@@ -31,12 +31,24 @@ ColorRGB compute_ray_color(const Ray & ray, const Hittable & world) {
             t * ColorRGB(0.0, 0.0, 0.0);
 }
 
-void write_color(std::ostream & output, const ColorRGB color) {
+void write_color(std::ostream & output, const ColorRGB color, 
+                 const int num_of_samples) {
+    
+    double r = color.x();
+    double g = color.y();
+    double b = color.z();
+
+    // Divide the color by the number of pixel samples
+    double scale = 1.0 / num_of_samples;
+    r *= scale;
+    g *= scale;
+    b *= scale;
+
     // RGB triplets follow arithmentic notation from 0-1,
     // convert to a color value from 0-255 and output
-    output << static_cast<int>(255.999 * color.x()) << " "
-           << static_cast<int>(255.999 * color.y()) << " "
-           << static_cast<int>(255.999 * color.z()) << std::endl;
+    output << static_cast<int>(256 * clamp(r, 0.0, 0.999)) << " "
+           << static_cast<int>(256 * clamp(g, 0.0, 0.999)) << " "
+           << static_cast<int>(256 * clamp(b, 0.0, 0.999)) << std::endl;
 }
 
 
