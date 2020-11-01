@@ -16,7 +16,7 @@ bool HittableList::hit(const Ray & ray, double t_min, double t_max,
 
     for (const auto & object : objects) {
         // Update the hit record to the closest object hit
-        if (object->hit(ray, t_min, closest_so_fat, tmp_record)) {
+        if (object->hit(ray, t_min, closest_so_far, tmp_record)) {
             hit_anything = true;
             closest_so_far = tmp_record.t;
             record = tmp_record;
