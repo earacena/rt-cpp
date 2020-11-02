@@ -28,7 +28,8 @@ ColorRGB compute_ray_color(const Ray & ray, const Hittable & world, int depth) {
     // then use the closest surface normal for color
     // A random point will send a ray thats within the unit sphere of the surface
     // out and recursively hit and recompute color until it fails to hit anything
-    if (world.hit(ray, 0.0, infinity, record)) { 
+    // Make t min avoid any hits very close to zero to avoid shadow acne
+    if (world.hit(ray, 0.001, infinity, record)) { 
         Point3 target = record.point + record.normal + random_in_unit_sphere();
         return 0.5 * compute_ray_color( Ray(record.point, target - record.point), 
                                         world, 
