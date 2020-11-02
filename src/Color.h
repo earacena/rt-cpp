@@ -51,11 +51,12 @@ void write_color(std::ostream & output, const ColorRGB color,
     double g = color.y();
     double b = color.z();
 
-    // Divide the color by the number of pixel samples
+    // Divide the color by the number of pixel samples and gamma corrected for 
+    // gamma=2.0 (sqrt is same as 1/2 where gamma is 1/gamma)
     double scale = 1.0 / num_of_samples;
-    r *= scale;
-    g *= scale;
-    b *= scale;
+    r = std::sqrt(scale * r);
+    g = std::sqrt(scale * g);
+    b = std::sqrt(scale * b);
 
     // RGB triplets follow arithmentic notation from 0-1,
     // convert to a color value from 0-255 and output
