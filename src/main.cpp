@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string>
 #include <cstdlib>
+#include <thread>
 
 #include "common.h"
 #include "Vec3.h"
@@ -17,32 +18,41 @@
 #include "Sphere.h"
 #include "HittableList.h"
 
+struct Task {
+  std::string id;
+  int start_row;
+  int end_row;
+  int start_col;
+  int end_col;
+};
+
 void print_usage() {
     std::cerr << "Usage:" << std::endl 
-              << "./rt [image width] [aspect width] [aspect height] [# of samples]" 
+              << "./rt [image width] [aspect width] [aspect height] [# of samples] [# of threads]" 
               << std::endl 
               << "\tArgs:" << std::endl
               << "\twidth: numeric value, example: 1600" << std::endl
               << "\taspect width: numeric value, example: 16" << std::endl
               << "\taspect height: numeric value, example: 9" << std::endl
-              << "\t# of samples: numeric value, example: 100" << std::endl;
+              << "\t# of samples: numeric value, example: 100" << std::endl
+              << "\t# of threads: numeric value, example: 4" << std::endl;
 }
 
-void render(const HittableList & world, const Camera & camera, 
+std::vector<ColorRGB> render(const HittableList & world, const Camera & camera, 
             const int image_width, const int image_height, 
-            const int num_of_samples) {
+            const int num_of_samples, Task task) {
     
     const int max_depth = 50;
 
     // Generate a .ppm (Netpbm) image
     // P3 means RGB color image in ASCII
-    std::cout << "P3" << std::endl;
+    // std::cout << "P3" << std::endl;
 
     // Add image dimensions
-    std::cout << image_width << " " << image_height << std::endl;
+    // std::cout << image_width << " " << image_height << std::endl;
     
     // Max color value
-    std::cout << "255" << std::endl;
+    // std::cout << "255" << std::endl;
 
     // Image data
     // every line is a RGB triplet
@@ -53,11 +63,11 @@ void render(const HittableList & world, const Camera & camera,
     double v = 0.0;     // 0.0-1.0 horizontal scale
     
     ColorRGB color = ColorRGB(0.0, 0.0, 0.0);
-    
-    for (int row = image_height-1; row >= 0; --row) {
+    std::vector<ColorRGB> result;
+    for (int row = task.start_row; row >= task.end_row; --row) {
         // Indicate progress
-        std::cerr << "\rScanlines remaining: " << row << std::flush;
-        for(int col = 0; col < image_width; ++col) {
+        std::cerr << "\rThread " << task.id <<  " | Scanlines remaining: " << row << std::flush;
+        for(int col = task.start_col; col < task.end_col; ++col) {
             color = ColorRGB(0.0, 0.0, 0.0);
             
             // This loop will take random offsets around point at (u,v)
@@ -72,7 +82,8 @@ void render(const HittableList & world, const Camera & camera,
                 color += compute_ray_color(camera.calculate_ray(u, v), world, max_depth);
             }
 
-            write_color(std::cout, color, num_of_samples);
+            //write_color(std::cout, color, num_of_samples);
+            result.append(color)
         }
     }
     std::cerr << std::endl << "Done rendering." << std::endl;
@@ -80,7 +91,7 @@ void render(const HittableList & world, const Camera & camera,
 
 int main(int argc, char *argv[]) {
     // Check number of arguments
-    if ((argc < 5) || (argc >= 6)) {
+    if ((argc < 6) || (argc >= 7)) {
         std::cout << "[err] Incorrect number of arguments." << std::endl;
         print_usage();
         return 0;
@@ -94,6 +105,7 @@ int main(int argc, char *argv[]) {
     const double aspect_ratio = aspect_width / aspect_height;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
     const int num_of_samples = static_cast<int>(std::atoi(argv[4]));
+    const int num_of_threads = static_case<int>(std::atoi(argvp[5]));
 
     // World
     HittableList world;
@@ -104,7 +116,26 @@ int main(int argc, char *argv[]) {
     Camera camera(2.0, aspect_ratio, 1.0, Point3(0.0, 0.0, 0.0));
 
     // Render
+    // Create threads based on number specified
+    std::array<std::thread, num_of_threads> threads;
+
     render(world, camera, image_width, image_height, num_of_samples);    
+     
+    
+    // Generate a .ppm (Netpbm) image
+    // P3 means RGB color image in ASCII
+    std::cout << "P3" << std::endl;
+
+    // Add image dimensions
+    std::cout << image_width << " " << image_height << std::endl;
+    
+    // Max color value
+    std::cout << "255" << std::endl;
+
+    // Image data
+    // every line is a RGB triplet
+    // col is image_width pixels
+    // row is image_height pixels
         
     return 0;
 }
