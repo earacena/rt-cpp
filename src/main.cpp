@@ -26,6 +26,9 @@ struct Task {
   int end_col;
 };
 
+// Type aliases for threading
+using std::vector<ColorRGB> RenderedSection;
+
 void print_usage() {
     std::cerr << "Usage:" << std::endl 
               << "./rt [image width] [aspect width] [aspect height] [# of samples] [# of threads]" 
@@ -38,7 +41,7 @@ void print_usage() {
               << "\t# of threads: numeric value, example: 4" << std::endl;
 }
 
-std::vector<ColorRGB> render(const HittableList & world, const Camera & camera, 
+RenderedSection render(const HittableList & world, const Camera & camera, 
             const int image_width, const int image_height, 
             const int num_of_samples, Task task) {
     
@@ -116,10 +119,17 @@ int main(int argc, char *argv[]) {
     Camera camera(2.0, aspect_ratio, 1.0, Point3(0.0, 0.0, 0.0));
 
     // Render
+    std::vector<RenderedSection> renders;
+    
     // Create threads based on number specified
     std::array<std::thread, num_of_threads> threads;
-
-    render(world, camera, image_width, image_height, num_of_samples);    
+    
+    // Assign every thread a section
+    // Loop and execute threads 
+    // While looping, collect rendered sections
+    // Combine rendered sections in order
+    
+    //render(world, camera, image_width, image_height, num_of_samples);    
      
     
     // Generate a .ppm (Netpbm) image
