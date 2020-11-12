@@ -43,7 +43,7 @@ void print_usage() {
 
 RenderedSection render(const HittableList & world, const Camera & camera, 
             const int image_width, const int image_height, 
-            const int num_of_samples, Task task) {
+            const int num_of_samples, const Task & task) {
     
     const int max_depth = 50;
 
@@ -124,13 +124,30 @@ int main(int argc, char *argv[]) {
     // Create threads based on number specified
     std::array<std::thread, num_of_threads> threads;
     
+    // Partition work into portions specified by number of threads
+    int row = 0;
+    int col = 0;
+    int row_interval = image_height / num_of_threads;
+    int col_interval = image_width / num_of_threads;
+    std::array<Task, num_of_threads> tasks;
+
+    for (Task & task : tasks) {
+      task.start_row = row;
+      task.end_row = row + row_interval;
+      task.start_col = col;
+      task.end_col = col + col_interval;
+
+      row = row + row_interval;
+      col = col + col_interval;
+    }
+
     // Assign every thread a section
     // Loop and execute threads 
-    // While looping, collect rendered sections
+    for (int i = 0; i < array.size(); ++i) {
+      threads[i] = std::thread(render, world, camera, image_width, image_height, 
+                               num_of_samples, task[i]);
+    }
     // Combine rendered sections in order
-    
-    //render(world, camera, image_width, image_height, num_of_samples);    
-     
     
     // Generate a .ppm (Netpbm) image
     // P3 means RGB color image in ASCII
