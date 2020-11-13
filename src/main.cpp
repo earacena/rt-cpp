@@ -119,11 +119,9 @@ int main(int argc, char *argv[]) {
     Camera camera(2.0, aspect_ratio, 1.0, Point3(0.0, 0.0, 0.0));
 
     // Render
-    std::vector<RenderedSection> renders;
-    
     // Create threads based on number specified
-    std::array<std::thread, num_of_threads> threads;
-    
+    std::vector<std::future<RenderedSection>> render_futures;
+
     // Partition work into portions specified by number of threads
     int row = 0;
     int col = 0;
@@ -131,22 +129,31 @@ int main(int argc, char *argv[]) {
     int col_interval = image_width / num_of_threads;
     std::array<Task, num_of_threads> tasks;
 
+    // Assign every thread a task
+    // Loop and execute threads 
     for (Task & task : tasks) {
       task.start_row = row;
       task.end_row = row + row_interval;
       task.start_col = col;
       task.end_col = col + col_interval;
 
+      std::future<RenderedSection> result = std::async(std::launch::async,
+                                                       render,
+                                                       world,
+                                                       camera,
+                                                       image_width,
+                                                       image_height,
+                                                       num_of_samples,
+                                                       task);
+      render_futures.push_back(result);
+
       row = row + row_interval;
       col = col + col_interval;
     }
 
-    // Assign every thread a section
-    // Loop and execute threads 
-    for (int i = 0; i < array.size(); ++i) {
-      threads[i] = std::thread(render, world, camera, image_width, image_height, 
-                               num_of_samples, task[i]);
-    }
+    
+
+    
     // Combine rendered sections in order
     
     // Generate a .ppm (Netpbm) image
@@ -163,6 +170,14 @@ int main(int argc, char *argv[]) {
     // every line is a RGB triplet
     // col is image_width pixels
     // row is image_height pixels
-        
+    
+    for (const std::future<RenderedSection> & render_future : render_futures) {
+
+      auto section = render_future.get();
+      for (const ColorRGB & color : section) {
+        writeColor(std::cout, color);  
+      }
+    }
+
     return 0;
 }
