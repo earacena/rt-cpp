@@ -8,7 +8,8 @@
 #include <iostream>
 #include <string>
 #include <cstdlib>
-#include <thread>
+#include <vector>
+#include <future>
 
 #include "common.h"
 #include "Vec3.h"
@@ -19,7 +20,7 @@
 #include "HittableList.h"
 
 struct Task {
-  std::string id;
+  int id;
   int start_row;
   int end_row;
   int start_col;
@@ -27,7 +28,7 @@ struct Task {
 };
 
 // Type aliases for threading
-using std::vector<ColorRGB> RenderedSection;
+using RenderedSection = std::vector<ColorRGB>;
 
 void print_usage() {
     std::cerr << "Usage:" << std::endl 
@@ -43,8 +44,21 @@ void print_usage() {
 
 RenderedSection render(const HittableList & world, const Camera & camera, 
             const int image_width, const int image_height, 
-            const int num_of_samples, const Task & task) {
+            const int num_of_samples, const Task task) {
     
+    // Print task about to be done
+    std::string task_description = std::string("\nThread ") + 
+                                   std::to_string(task.id) +
+                                   " | rows: " + 
+                                   std::to_string(task.start_row) + " to " +
+                                   std::to_string(task.end_row) + 
+                                   ", cols: " +
+                                   std::to_string(task.start_col) + " to " +
+                                   std::to_string(task.end_col) + "\n";
+
+    std::cerr << task_description;
+
+    // Constaints
     const int max_depth = 50;
 
     // Generate a .ppm (Netpbm) image
@@ -66,10 +80,9 @@ RenderedSection render(const HittableList & world, const Camera & camera,
     double v = 0.0;     // 0.0-1.0 horizontal scale
     
     ColorRGB color = ColorRGB(0.0, 0.0, 0.0);
-    std::vector<ColorRGB> result;
+    RenderedSection result;
     for (int row = task.start_row; row >= task.end_row; --row) {
         // Indicate progress
-        std::cerr << "\rThread " << task.id <<  " | Scanlines remaining: " << row << std::flush;
         for(int col = task.start_col; col < task.end_col; ++col) {
             color = ColorRGB(0.0, 0.0, 0.0);
             
@@ -85,11 +98,16 @@ RenderedSection render(const HittableList & world, const Camera & camera,
                 color += compute_ray_color(camera.calculate_ray(u, v), world, max_depth);
             }
 
-            //write_color(std::cout, color, num_of_samples);
-            result.append(color)
+            result.push_back(color);
         }
     }
-    std::cerr << std::endl << "Done rendering." << std::endl;
+    
+    // Print task id to signal task completion
+    std::string done_message = std::string("\nThread ") + std::to_string(task.id) + 
+                               " done.\n";
+    std::cerr << done_message;
+    
+    return result;
 }
 
 int main(int argc, char *argv[]) {
@@ -108,7 +126,7 @@ int main(int argc, char *argv[]) {
     const double aspect_ratio = aspect_width / aspect_height;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
     const int num_of_samples = static_cast<int>(std::atoi(argv[4]));
-    const int num_of_threads = static_case<int>(std::atoi(argvp[5]));
+    const int num_of_threads = static_cast<int>(std::atoi(argv[5]));
 
     // World
     HittableList world;
@@ -120,32 +138,28 @@ int main(int argc, char *argv[]) {
 
     // Render
     // Create threads based on number specified
-    std::vector<std::future<RenderedSection>> render_futures;
+    std::vector<std::future<RenderedSection>> renders;
 
     // Partition work into portions specified by number of threads
     int row = 0;
     int col = 0;
     int row_interval = image_height / num_of_threads;
     int col_interval = image_width / num_of_threads;
-    std::array<Task, num_of_threads> tasks;
 
     // Assign every thread a task
-    // Loop and execute threads 
-    for (Task & task : tasks) {
+    // Loop and execute threads
+    Task task; 
+    for (int i = 0; i < num_of_threads; ++i) {
+      
+      task.id = i;
       task.start_row = row;
       task.end_row = row + row_interval;
       task.start_col = col;
       task.end_col = col + col_interval;
 
-      std::future<RenderedSection> result = std::async(std::launch::async,
-                                                       render,
-                                                       world,
-                                                       camera,
-                                                       image_width,
-                                                       image_height,
-                                                       num_of_samples,
-                                                       task);
-      render_futures.push_back(result);
+      renders.push_back(std::async(std::launch::async, render, std::ref(world),
+                                   std::ref(camera), image_width, image_height,
+                                   num_of_samples, task));
 
       row = row + row_interval;
       col = col + col_interval;
@@ -171,11 +185,10 @@ int main(int argc, char *argv[]) {
     // col is image_width pixels
     // row is image_height pixels
     
-    for (const std::future<RenderedSection> & render_future : render_futures) {
-
-      auto section = render_future.get();
+    for (std::future<RenderedSection> & render_result : renders) {
+      auto section = render_result.get();
       for (const ColorRGB & color : section) {
-        writeColor(std::cout, color);  
+        write_color(std::cout, color, num_of_samples);  
       }
     }
 
