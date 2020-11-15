@@ -81,7 +81,7 @@ RenderedSection render(const HittableList & world, const Camera & camera,
     
     ColorRGB color = ColorRGB(0.0, 0.0, 0.0);
     RenderedSection result;
-    for (int row = task.start_row; row >= task.end_row; --row) {
+    for (int row = task.end_row; row >= task.start_row; --row) {
         // Indicate progress
         for(int col = task.start_col; col < task.end_col; ++col) {
             color = ColorRGB(0.0, 0.0, 0.0);
@@ -104,7 +104,8 @@ RenderedSection render(const HittableList & world, const Camera & camera,
     
     // Print task id to signal task completion
     std::string done_message = std::string("\nThread ") + std::to_string(task.id) + 
-                               " done.\n";
+                               " done, size of result " + std::to_string(result.size()) + 
+                               "\n";
     std::cerr << done_message;
     
     return result;
@@ -138,13 +139,11 @@ int main(int argc, char *argv[]) {
 
     // Render
     // Create threads based on number specified
-    std::vector<std::future<RenderedSection>> renders;
+    std::vector<std::future<RenderedSection>> render_futures;
 
     // Partition work into portions specified by number of threads
     int row = 0;
-    int col = 0;
     int row_interval = image_height / num_of_threads;
-    int col_interval = image_width / num_of_threads;
 
     // Assign every thread a task
     // Loop and execute threads
@@ -154,15 +153,15 @@ int main(int argc, char *argv[]) {
       task.id = i;
       task.start_row = row;
       task.end_row = row + row_interval;
-      task.start_col = col;
-      task.end_col = col + col_interval;
+      task.start_col = 0;
+      task.end_col = image_width;
 
-      renders.push_back(std::async(std::launch::async, render, std::ref(world),
-                                   std::ref(camera), image_width, image_height,
-                                   num_of_samples, task));
+      render_futures.push_back( std::async( std::launch::async, render, 
+                                            std::ref(world), std::ref(camera), 
+                                            image_width, image_height,
+                                            num_of_samples, task));
 
       row = row + row_interval;
-      col = col + col_interval;
     }
 
     
@@ -184,9 +183,9 @@ int main(int argc, char *argv[]) {
     // every line is a RGB triplet
     // col is image_width pixels
     // row is image_height pixels
-    
-    for (std::future<RenderedSection> & render_result : renders) {
-      auto section = render_result.get();
+    RenderedSection section;
+    for (auto i = render_futures.rbegin(); i != render_futures.rend(); ++i) {
+      section = (*i).get();
       for (const ColorRGB & color : section) {
         write_color(std::cout, color, num_of_samples);  
       }
