@@ -11,10 +11,14 @@
 #include "common.h"
 #include "Vec3.h"
 #include "Ray.h"
+#include "Material.h"
+
+class Material;
 
 struct HitRecord {
     Point3 point;
     Vec3 normal;
+    std::shared_ptr<Material> mat_ptr;
     double t;
     bool front_face;
 

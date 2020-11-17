@@ -15,16 +15,17 @@
 
 class Sphere : public Hittable {
 public:
-    Sphere() { }
-    Sphere(const Point3 & center, double radius) 
-        : center(center), radius(radius) { };
+  Sphere() { }
+  Sphere(const Point3 & center, double radius, std::shared_ptr<Material> mat) 
+      : center(center), radius(radius) { };
 
-    virtual bool hit( const Ray & ray, double t_min, double t_max, 
-                      HitRecord & record ) const override;
+  virtual bool hit( const Ray & ray, double t_min, double t_max, 
+                    HitRecord & record ) const override;
 
-    // Data Members
-    Point3 center;
-    double radius; 
+  // Data Members
+  Point3 center;
+  double radius;
+  std::shared_ptr<Material> mat_ptr;     
 };
 
 #endif // SPHERE_H
