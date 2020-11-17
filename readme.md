@@ -5,13 +5,20 @@
   A ray-tracer written in C++17.
 
 ### Features (implemented/WIP)
+  * Rendering
+    * Rays
+    * Camera
+    * Anti-aliasing
+    * Multiple objects
+
   * Objects
     * Spheres
 
   * Materials
     * Diffuse
 
-  * Utility 
+  * Utility
+    * Vector opertations
     * Saving render to .ppm file
 
   * Performance
