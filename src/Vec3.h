@@ -80,6 +80,14 @@ public:
         return std::sqrt(length_squared());
     }
 
+    bool near_zero() const {
+        // Return true if vector's dimensions are near zero, false otherwise.
+        const double s = 1e-8;
+        return (fabs(std::get<0>(e)) < s) &&
+               (fabs(std::get<1>(e)) < s) &&
+               (fabs(std::get<2>(e)) < s);
+    }
+
     inline static Vec3 random() {
         return Vec3(random_double(), random_double(), random_double());
     }
