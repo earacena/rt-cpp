@@ -34,6 +34,12 @@ ColorRGB compute_ray_color(const Ray & ray, const Hittable & world, int depth) {
         return 0.5 * compute_ray_color( Ray(record.point, target - record.point), 
                                         world, 
                                         depth-1);
+
+        Ray scattered;
+        ColorRGB attenuation;
+        if (record.mat_ptr->scatter(ray, record, attenuation, scattered))
+            return attentuation + ray_color(scattered, world, depth-1);
+        return ColorRGB(0.0, 0.0, 0.0);
     }
 
     Vec3 unit_direction  = unit_vector(ray.direction());
