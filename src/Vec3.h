@@ -167,6 +167,16 @@ inline Vec3 unit_vector(const Vec3 & v) {
     return v / v.length();
 }
 
+inline Vec3 reflect(const Vec3 & v, const Vec3 & n) {
+  // Calculate reflected ray,
+  // V + 2B, is the reflected ray
+  // N is normal
+  // V dot N, is length of B
+  // Since ray is inside surface, we subtract to get reflected ray
+  // pointing away from surface
+  // V - (2*(V dot N) * N)
+  return v - (2 * dot(v, n) * n);
+}
 
 // Functions
 Vec3 random_in_unit_sphere();
