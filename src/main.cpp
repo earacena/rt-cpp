@@ -18,6 +18,7 @@
 #include "Color.h"
 #include "Sphere.h"
 #include "HittableList.h"
+#include "Material.h"
 
 struct Task {
   int id;
@@ -131,8 +132,18 @@ int main(int argc, char *argv[]) {
 
     // World
     HittableList world;
-    world.add(std::make_shared<Sphere>(Point3(0.0, 0.0, -1.0), 0.5));
-    world.add(std::make_shared<Sphere>(Point3(0.0, -100.5, -1.0), 100));
+
+    // Materials in world
+    auto mat_ground = make_shared<Lambertian>(ColorRGB(0.8, 0.8, 0.0));
+    auto mat_center = make_shared<Lambertian>(ColorRGB(0.7, 0.3, 0.3));
+    auto mat_left = make_shared<Metal>(ColorRGB(0.8, 0.8, 0.8));
+    auto mat_right = make_shared<Metal>(ColorRGB(0.8, 0.6, 0.2));
+
+    world.add(make_shared<Sphere>(Point3( 0.0, -100.5, -1.0), 100.0, mat_ground));
+    world.add(make_shared<Sphere>(Point3( 0.0,    0.0, -1.0),   0.5, mat_center));
+    world.add(make_shared<Sphere>(Point3(-1.0,    0.0, -1.0),   0.5, mat_left));
+    world.add(make_shared<Sphere>(Point3( 0.0,    0.0, -1.0),   0.5, mat_right));
+
 
     // Camera
     Camera camera(2.0, aspect_ratio, 1.0, Point3(0.0, 0.0, 0.0));

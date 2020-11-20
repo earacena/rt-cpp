@@ -180,7 +180,8 @@ inline Vec3 reflect(const Vec3 & v, const Vec3 & n) {
 
 // Functions
 Vec3 random_in_unit_sphere();
-
+Vec3 random_unit_vector();
+Vec3 random_in_hemisphere(const Vec3 & normal);
 
 // Type aliases
 using ColorRGB = Vec3;

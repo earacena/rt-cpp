@@ -26,7 +26,7 @@ public:
     virtual bool scatter(const Ray & ray_in, const HitRecord & record,
                          ColorRGB & attenuation, Ray & scattered) const override {
     
-        auto scatter_direction. record.normal + random_unit_vector();
+        auto scatter_direction = record.normal + random_unit_vector();
     
         // catch scatter direction close to zero
         if (scatter_direction.near_zero())

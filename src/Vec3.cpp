@@ -28,3 +28,18 @@ Vec3 random_in_unit_sphere() {
             return point;
     }
 }
+
+Vec3 random_unit_vector() {
+    return unit_vector(random_in_unit_sphere());
+}
+
+Vec3 random_in_hemisphere(const Vec3 & normal) {
+    Vec3 in_unit_sphere = random_in_unit_sphere();
+    if (dot(in_unit_sphere, normal) > 0.0) {
+        // Same hemisphere as the normal
+        return in_unit_sphere;
+    } else {
+        // Negate, make it point in same direction as normal
+        return -in_unit_sphere;
+    }
+}
