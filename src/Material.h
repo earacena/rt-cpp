@@ -4,6 +4,7 @@
  *  Filename: Material.h
  *  Description: Simple ray-tracer written in C++.
  */
+
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
@@ -17,46 +18,6 @@ class Material {
 public:
     virtual bool scatter(const Ray & ray_in, const HitRecord & record,
                          ColorRGB & attenuation, Ray & scattered) const = 0;
-};
-
-class Lambertian : public Material {
-public:
-    Lambertian(const ColorRGB & albedo) : albedo(albedo) { }
-
-    virtual bool scatter(const Ray & ray_in, const HitRecord & record,
-                         ColorRGB & attenuation, Ray & scattered) const override {
-    
-        auto scatter_direction = record.normal + random_unit_vector();
-    
-        // catch scatter direction close to zero
-        if (scatter_direction.near_zero())
-            scatter_direction = record.normal;
-
-        scattered = Ray(record.p, scatter_direction);
-        attenuation = albedo;
-        return true;
-    }
-
-  // Data members
-  ColorRGB albedo;
-
-};
-
-class Metal : public Material {
-public:
-    Metal(const ColorRGB & albedo) : albedo(albedo) { }
-
-    virtual bool scatter(const Ray & ray_in, const HitRecord & record,
-                         ColorRGB & attenuation, Ray & scattered) const override {
-        Vec3 reflected = reflect(unit_vector(ray_in.direction(), record.normal));
-        scattered = Ray(record.point, reflected);
-        attenuation = albedo;
-        return (dot(scattered.direction(), record.normal) > 0);
-    }
-
-  // Data members
-  ColorRGB albedo;
-
 };
 
 #endif // MATERIAL_H
